@@ -6,11 +6,21 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer);
 
-io.on('connection', (socket) => {
-    console.log('user connected', socket.id);
-});
+const loadMap = require("./mapLoader");
 
-app.use(express.static('public'));
+async function main() {
+
+    const ground2D = await loadMap();
+    io.on('connection', (socket) => {
+        console.log('user connected', socket.id);
+
+        socket.emit('map', ground2D);
+    });
+
+    app.use(express.static('public'));
 
 
-httpServer.listen(3000);
+    httpServer.listen(3000);
+}
+
+main();

@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 const loadMap = require("./mapLoader");
 
 const SPEED = 5;
-const TICK_RATE = 128;
+const TICK_RATE = 64;
 const SNOWBALL_SPEED = 7;
 const PLSYER_SIZE = 32;
 const TILE_SIZE = 32;
@@ -98,8 +98,8 @@ function tick(delta) {
             if (player.id === snowball.playerId) continue;
             const distance = Math.sqrt((player.x + PLSYER_SIZE / 2 - snowball.x) ** 2 + (player.y + PLSYER_SIZE / 2 - snowball.y) ** 2);
             if (distance <= PLSYER_SIZE / 2) {
-                player.x = 0;
-                player.y = 0;
+                player.x = Math.floor(Math.random() * 1650);
+                player.y = Math.floor(Math.random() * 1650);
                 snowball.timeLeft = -1;
                 break;
             }
@@ -118,6 +118,7 @@ async function main() {
 
     io.on('connection', (socket) => {
         console.log('user connected', socket.id);
+
         inputsMap[socket.id] = { 
             up: false,
             down: false,
@@ -127,8 +128,8 @@ async function main() {
 
         players.push({
             id: socket.id,
-            x: 700,
-            y: 700,
+            x: Math.floor(Math.random() * 1650),
+            y: Math.floor(Math.random() * 1650),
         });
 
         socket.emit('map', {

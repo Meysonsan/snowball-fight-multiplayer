@@ -12,6 +12,7 @@ const canvas = canvasEl.getContext("2d");
 const socket = io(`ws://localhost:3000/`);
 
 let groundMap = [[]];
+let decalMap = [[]];
 let players = [];
 let snowballs = [];
 const TILE_SIZE = 32;
@@ -22,7 +23,8 @@ socket.on('connect', () => {
 });
 
 socket.on("map", (loadedMap) => {
-    groundMap = loadedMap;
+    groundMap = loadedMap.ground;
+    decalMap = loadedMap.decal;
 });
 
 socket.on('players', (serverPlayers) => {
@@ -87,6 +89,7 @@ function loop() {
     
     const TILES_IN_ROW = 8;
 
+    // draw ground
     for (let row = 0; row < groundMap.length; row++) {
         for (let col = 0; col < groundMap[0].length; col++) {
             let { id } = groundMap[row][col];
@@ -103,6 +106,26 @@ function loop() {
                 TILE_SIZE,
                 TILE_SIZE
             );
+        }
+    }
+    // draw decal
+    for (let row = 0; row < decalMap.length; row++) {
+        for (let col = 0; col < decalMap[0].length; col++) {
+          let { id } = decalMap[row][col] || { id: undefined };
+          const imageRow = parseInt(id / TILES_IN_ROW);
+          const imageCol = id % TILES_IN_ROW;
+    
+          canvas.drawImage(
+            mapImage,
+            imageCol * TILE_SIZE,
+            imageRow * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE,
+            col * TILE_SIZE - cameraX,
+            row * TILE_SIZE - cameraY,
+            TILE_SIZE,
+            TILE_SIZE
+          );
         }
     }
 
